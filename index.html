@@ -78,12 +78,12 @@
 
         <label for="task_category" class="visually-hidden">Task category</label>
         <select id="task_category" name="task_category" class="inline-select inline-select--wide" aria-required="true">
-          <option value="data_entry">moving or entering data between tools</option>
-          <option value="reporting">pulling and formatting reports</option>
-          <option value="notifications">sending routine updates or alerts</option>
-          <option value="file_ops">organizing, converting, or renaming files</option>
-          <option value="scheduling">scheduling, booking, or calendar coordination</option>
-          <option value="research">gathering or aggregating information</option>
+          <option value="data_entry">moving data</option>
+          <option value="reporting">making reports</option>
+          <option value="notifications">sending updates</option>
+          <option value="file_ops">managing files</option>
+          <option value="scheduling">scheduling things</option>
+          <option value="research">gathering info</option>
         </select>
 
         <span class="sentence-text">for</span>
@@ -98,9 +98,9 @@
           placeholder="writing status reports"
           aria-required="true"
           autocomplete="off"
-        >
+        ><span class="sentence-text">.</span>
 
-        <span class="sentence-text sentence-text--block">It would take me</span>
+        <span class="sentence-text">It would take</span>
 
         <label for="hours_to_automate" class="visually-hidden">Time to automate</label>
         <input
@@ -146,7 +146,7 @@
 
       <div id="form-error" class="form-error" role="alert" aria-live="assertive"></div>
 
-      <button type="submit" id="calculate-btn" class="calculate-btn">Should I automate?</button>
+      <button type="submit" id="calculate-btn" class="calculate-btn">Should I automate this?</button>
     </form>
 
     <div id="output" class="output" aria-live="polite" hidden>

@@ -107,11 +107,60 @@ function formatHours(n) {
 }
 
 function formatRoi(n) {
-  return n.toFixed(1) + 'x';
+  return Math.round(n) + 'x';
 }
 
-function formatPayback(n) {
-  return n.toFixed(1);
+// Converts a number of hours into the most readable whole-number time unit.
+// Uses work-based units: 8h/day, 40h/week, 160h/month, 2080h/year.
+function humanizeTime(hours) {
+  const mins = hours * 60;
+  if (mins < 1) {
+    const s = Math.round(mins * 60);
+    return s + (s === 1 ? ' second' : ' seconds');
+  }
+  if (hours < 1) {
+    const m = Math.round(mins);
+    return m + (m === 1 ? ' minute' : ' minutes');
+  }
+  if (hours < 16) {
+    const h = Math.round(hours);
+    return h + (h === 1 ? ' hour' : ' hours');
+  }
+  const days = hours / 8;
+  if (days < 10) {
+    const d = Math.round(days);
+    return d + (d === 1 ? ' day' : ' days');
+  }
+  const weeks = hours / 40;
+  if (weeks < 10) {
+    const w = Math.round(weeks);
+    return w + (w === 1 ? ' week' : ' weeks');
+  }
+  const months = hours / 160;
+  if (months < 12) {
+    const mo = Math.round(months);
+    return mo + (mo === 1 ? ' month' : ' months');
+  }
+  const years = Math.round(hours / 2080);
+  return years + (years === 1 ? ' year' : ' years');
+}
+
+// Converts calendar weeks into the most readable whole-number time unit.
+function humanizePayback(weeks) {
+  if (weeks < 1) {
+    const d = Math.round(weeks * 7);
+    return (d < 1 ? 'less than a day' : d + (d === 1 ? ' day' : ' days'));
+  }
+  if (weeks < 8) {
+    const w = Math.round(weeks);
+    return w + (w === 1 ? ' week' : ' weeks');
+  }
+  if (weeks < 52) {
+    const m = Math.round(weeks / 4.33);
+    return m + (m === 1 ? ' month' : ' months');
+  }
+  const y = Math.round(weeks / 52);
+  return y + (y === 1 ? ' year' : ' years');
 }
 
 // ============================================================
@@ -122,21 +171,21 @@ const TOOL_DATA = {
   data_entry: [
     {
       name: 'Make',
-      slug: 'make',
+      url: 'https://make.com',
       description: 'Visual workflow builder for connecting apps and automating data transfers.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'n8n',
-      slug: 'n8n',
+      url: 'https://n8n.io',
       description: 'Open-source workflow automation; self-host or cloud.',
       tier: 'Open source',
       complexity: 'Low-code',
     },
     {
       name: 'Microsoft Power Automate',
-      slug: 'power-automate',
+      url: 'https://powerautomate.microsoft.com',
       description: 'Deep Microsoft 365 integration; handles desktop and cloud flows.',
       tier: 'Paid',
       complexity: 'Low-code',
@@ -145,21 +194,21 @@ const TOOL_DATA = {
   reporting: [
     {
       name: 'Make',
-      slug: 'make',
+      url: 'https://make.com',
       description: 'Connect your data sources and auto-generate report exports on a schedule.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'Notion',
-      slug: 'notion',
+      url: 'https://notion.so',
       description: 'Build living dashboards that pull from databases; auto-update with integrations.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'n8n',
-      slug: 'n8n',
+      url: 'https://n8n.io',
       description: 'Chain API calls to assemble and deliver formatted reports.',
       tier: 'Open source',
       complexity: 'Low-code',
@@ -168,21 +217,21 @@ const TOOL_DATA = {
   notifications: [
     {
       name: 'Make',
-      slug: 'make',
+      url: 'https://make.com',
       description: 'Trigger Slack, email, or SMS alerts based on any condition in your app stack.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'n8n',
-      slug: 'n8n',
+      url: 'https://n8n.io',
       description: 'Custom notification workflows with conditional logic and branching.',
       tier: 'Open source',
       complexity: 'Low-code',
     },
     {
       name: 'Microsoft Power Automate',
-      slug: 'power-automate',
+      url: 'https://powerautomate.microsoft.com',
       description: 'Native Teams and Outlook alerts; no extra setup for Microsoft shops.',
       tier: 'Paid',
       complexity: 'No-code',
@@ -191,21 +240,21 @@ const TOOL_DATA = {
   file_ops: [
     {
       name: 'Make',
-      slug: 'make',
+      url: 'https://make.com',
       description: 'Watch folders, rename, convert, and route files across cloud storage.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'n8n',
-      slug: 'n8n',
+      url: 'https://n8n.io',
       description: 'Script-friendly file operations with full control over logic.',
       tier: 'Open source',
       complexity: 'Low-code',
     },
     {
       name: 'Microsoft Power Automate',
-      slug: 'power-automate',
+      url: 'https://powerautomate.microsoft.com',
       description: 'SharePoint and OneDrive file automation built in.',
       tier: 'Paid',
       complexity: 'No-code',
@@ -214,21 +263,21 @@ const TOOL_DATA = {
   scheduling: [
     {
       name: 'Make',
-      slug: 'make',
+      url: 'https://make.com',
       description: 'Automate calendar invites, reminders, and booking confirmations across tools.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'Notion',
-      slug: 'notion',
+      url: 'https://notion.so',
       description: 'Build a self-updating scheduling hub with linked databases and reminders.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'n8n',
-      slug: 'n8n',
+      url: 'https://n8n.io',
       description: 'Custom scheduling logic with API access to any calendar or booking tool.',
       tier: 'Open source',
       complexity: 'Low-code',
@@ -237,21 +286,21 @@ const TOOL_DATA = {
   research: [
     {
       name: 'Make',
-      slug: 'make',
+      url: 'https://make.com',
       description: 'Pull data from APIs, RSS feeds, or web forms into a single structured output.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'Notion',
-      slug: 'notion',
+      url: 'https://notion.so',
       description: 'Centralize research into a linked database; share with your team.',
       tier: 'Free tier',
       complexity: 'No-code',
     },
     {
       name: 'n8n',
-      slug: 'n8n',
+      url: 'https://n8n.io',
       description: 'Scrape, query, and aggregate from multiple sources with full scripting support.',
       tier: 'Open source',
       complexity: 'Low-code',
@@ -278,18 +327,18 @@ const NO_QUIPS = [
 function buildBusinessCasePlainText(result, taskDescription) {
   const { annual_hours, annual_cost, invest_hours, invest_cost, payback_weeks, roi_ratio, three_year_savings } = result;
   return (
-    `Automating ${taskDescription} will save you approximately ${formatHours(annual_hours)} hours\n` +
-    `per year — worth ${formatCurrency(annual_cost)} at your salary. Your one-time investment\n` +
-    `of ${formatHours(invest_hours)} hours (${formatCurrency(invest_cost)}) pays for itself in ${formatPayback(payback_weeks)} weeks,\n` +
-    `returning ${formatRoi(roi_ratio)} over 3 years (${formatCurrency(three_year_savings)} in recovered time).\n\n` +
-    `Automate it.`
+    `Automating ${taskDescription} will save approximately ${humanizeTime(annual_hours)} per year, ` +
+    `worth ${formatCurrency(annual_cost)}. ` +
+    `A one-time investment of ${humanizeTime(invest_hours)} (${formatCurrency(invest_cost)}) ` +
+    `will pay for itself in ${humanizePayback(payback_weeks)}, ` +
+    `with a ${formatRoi(roi_ratio)} return over 3 years (worth ${formatCurrency(three_year_savings)}).`
   );
 }
 
 function renderToolCard(tool) {
   return (
     `<div class="tool-card">` +
-      `<a class="tool-card__name" href="#affiliate-${tool.slug}">${tool.name}</a>` +
+      `<a class="tool-card__name" href="${tool.url}" target="_blank" rel="noopener noreferrer">${tool.name}</a>` +
       `<p class="tool-card__description">${tool.description}</p>` +
       `<div class="tool-card__badges">` +
         `<span class="tool-card__badge tool-card__badge--tier">${tool.tier}</span>` +
@@ -310,27 +359,67 @@ function renderTools(category) {
   toolsSection.removeAttribute('hidden');
 }
 
+function initResetButton() {
+  document.getElementById('reset-btn').addEventListener('click', function () {
+    // Hide output
+    const output = document.getElementById('output');
+    output.setAttribute('hidden', '');
+
+    // Clear result content and tools
+    document.getElementById('result-content').innerHTML = '';
+    const toolsSection = document.getElementById('tools-section');
+    toolsSection.setAttribute('hidden', '');
+    toolsSection.innerHTML = '';
+
+    // Reset the form
+    document.getElementById('calc-form').reset();
+
+    // Clear validation state
+    document.querySelectorAll('.is-invalid').forEach(function (el) {
+      el.classList.remove('is-invalid');
+      el.removeAttribute('aria-invalid');
+    });
+    document.getElementById('form-error').textContent = '';
+
+    // Clear URL params
+    history.replaceState(null, '', location.pathname);
+
+    // Re-size all inputs/selects to their placeholder widths
+    document.querySelectorAll('.inline-input').forEach(function (input) {
+      input.dispatchEvent(new Event('input'));
+    });
+    document.querySelectorAll('.inline-select').forEach(function (select) {
+      select.dispatchEvent(new Event('change'));
+    });
+
+    // Scroll back to form and focus first input
+    const firstInput = document.getElementById('hours_per_occurrence');
+    firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    firstInput.focus();
+  });
+}
+
 function renderYes(result, taskDescription, taskCategory) {
   const { annual_hours, annual_cost, invest_hours, invest_cost, payback_weeks, roi_ratio, three_year_savings } = result;
 
   // Verdict
   const verdictEl = document.getElementById('verdict');
   verdictEl.className = 'verdict verdict--yes';
-  verdictEl.innerHTML = '<span class="verdict-icon" aria-hidden="true">✓</span> Yes, automate it.';
+  verdictEl.innerHTML = 'Yes, automate it.';
 
   // Business case block
   const plainText = buildBusinessCasePlainText(result, taskDescription);
 
   // Build HTML version with mono spans on numbers
   const htmlText =
-    `Automating <em>${taskDescription}</em> will save you approximately ` +
-    `<span class="mono">${formatHours(annual_hours)} hours</span> ` +
-    `per year — worth <span class="mono">${formatCurrency(annual_cost)}</span> at your salary. ` +
-    `Your one-time investment of <span class="mono">${formatHours(invest_hours)} hours</span> ` +
-    `(<span class="mono">${formatCurrency(invest_cost)}</span>) pays for itself in ` +
-    `<span class="mono">${formatPayback(payback_weeks)} weeks</span>, ` +
-    `returning <span class="mono">${formatRoi(roi_ratio)}</span> over 3 years ` +
-    `(<span class="mono">${formatCurrency(three_year_savings)}</span> in recovered time).\n\nAutomate it.`;
+    `Automating <em>${taskDescription}</em> will save approximately ` +
+    `<span class="mono">${humanizeTime(annual_hours)}</span> per year, ` +
+    `worth <span class="mono">${formatCurrency(annual_cost)}</span>. ` +
+    `A one-time investment of <span class="mono">${humanizeTime(invest_hours)}</span> ` +
+    `(<span class="mono">${formatCurrency(invest_cost)}</span>) will pay for itself in ` +
+    `<span class="mono">${humanizePayback(payback_weeks)}</span>, ` +
+    `with a <span class="mono">${formatRoi(roi_ratio)}</span> return over 3 years ` +
+    `(worth <span class="mono">${formatCurrency(three_year_savings)}</span>).`;
 
   const resultEl = document.getElementById('result-content');
   resultEl.innerHTML =
@@ -338,6 +427,7 @@ function renderYes(result, taskDescription, taskCategory) {
     `<div class="action-btns">` +
       `<button type="button" class="copy-btn" id="copy-btn">Copy business case</button>` +
       `<button type="button" class="share-btn" id="share-btn">Share</button>` +
+      `<button type="button" class="reset-btn" id="reset-btn">Reset</button>` +
     `</div>`;
 
   document.getElementById('copy-btn').addEventListener('click', function () {
@@ -362,6 +452,7 @@ function renderYes(result, taskDescription, taskCategory) {
     });
   });
 
+  initResetButton();
   renderTools(taskCategory);
 }
 
@@ -373,7 +464,7 @@ function renderNo(result) {
   // Verdict
   const verdictEl = document.getElementById('verdict');
   verdictEl.className = 'verdict verdict--no';
-  verdictEl.innerHTML = '<span class="verdict-icon" aria-hidden="true">✕</span> No, not worth it.';
+  verdictEl.innerHTML = 'No, not worth it.';
 
   const resultEl = document.getElementById('result-content');
   resultEl.innerHTML =
@@ -386,6 +477,7 @@ function renderNo(result) {
     `</p>` +
     `<div class="action-btns">` +
       `<button type="button" class="share-btn" id="share-btn">Share</button>` +
+      `<button type="button" class="reset-btn" id="reset-btn">Reset</button>` +
     `</div>`;
 
   document.getElementById('share-btn').addEventListener('click', function () {
@@ -398,6 +490,8 @@ function renderNo(result) {
       }, 2000);
     });
   });
+
+  initResetButton();
 
   // Hide tool recommendations
   const toolsSection = document.getElementById('tools-section');
@@ -634,7 +728,7 @@ function initAutoResize() {
     'visibility:hidden',
     'white-space:pre',
     'font-family:Fraunces,Georgia,serif',
-    'font-size:1.75rem',   /* matches .sentence font-size */
+    'font-size:1.625rem',  /* matches .sentence font-size */
     'font-weight:600',     /* matches input/select font-weight */
   ].join(';');
   document.body.appendChild(ruler);
