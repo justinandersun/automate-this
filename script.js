@@ -103,6 +103,151 @@ function formatPayback(n) {
 }
 
 // ============================================================
+// Tool Data (keyed by task_category)
+// ============================================================
+
+const TOOL_DATA = {
+  data_entry: [
+    {
+      name: 'Make',
+      slug: 'make',
+      description: 'Visual workflow builder for connecting apps and automating data transfers.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'n8n',
+      slug: 'n8n',
+      description: 'Open-source workflow automation; self-host or cloud.',
+      tier: 'Open source',
+      complexity: 'Low-code',
+    },
+    {
+      name: 'Microsoft Power Automate',
+      slug: 'power-automate',
+      description: 'Deep Microsoft 365 integration; handles desktop and cloud flows.',
+      tier: 'Paid',
+      complexity: 'Low-code',
+    },
+  ],
+  reporting: [
+    {
+      name: 'Make',
+      slug: 'make',
+      description: 'Connect your data sources and auto-generate report exports on a schedule.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'Notion',
+      slug: 'notion',
+      description: 'Build living dashboards that pull from databases; auto-update with integrations.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'n8n',
+      slug: 'n8n',
+      description: 'Chain API calls to assemble and deliver formatted reports.',
+      tier: 'Open source',
+      complexity: 'Low-code',
+    },
+  ],
+  notifications: [
+    {
+      name: 'Make',
+      slug: 'make',
+      description: 'Trigger Slack, email, or SMS alerts based on any condition in your app stack.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'n8n',
+      slug: 'n8n',
+      description: 'Custom notification workflows with conditional logic and branching.',
+      tier: 'Open source',
+      complexity: 'Low-code',
+    },
+    {
+      name: 'Microsoft Power Automate',
+      slug: 'power-automate',
+      description: 'Native Teams and Outlook alerts; no extra setup for Microsoft shops.',
+      tier: 'Paid',
+      complexity: 'No-code',
+    },
+  ],
+  file_ops: [
+    {
+      name: 'Make',
+      slug: 'make',
+      description: 'Watch folders, rename, convert, and route files across cloud storage.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'n8n',
+      slug: 'n8n',
+      description: 'Script-friendly file operations with full control over logic.',
+      tier: 'Open source',
+      complexity: 'Low-code',
+    },
+    {
+      name: 'Microsoft Power Automate',
+      slug: 'power-automate',
+      description: 'SharePoint and OneDrive file automation built in.',
+      tier: 'Paid',
+      complexity: 'No-code',
+    },
+  ],
+  scheduling: [
+    {
+      name: 'Make',
+      slug: 'make',
+      description: 'Automate calendar invites, reminders, and booking confirmations across tools.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'Notion',
+      slug: 'notion',
+      description: 'Build a self-updating scheduling hub with linked databases and reminders.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'n8n',
+      slug: 'n8n',
+      description: 'Custom scheduling logic with API access to any calendar or booking tool.',
+      tier: 'Open source',
+      complexity: 'Low-code',
+    },
+  ],
+  research: [
+    {
+      name: 'Make',
+      slug: 'make',
+      description: 'Pull data from APIs, RSS feeds, or web forms into a single structured output.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'Notion',
+      slug: 'notion',
+      description: 'Centralize research into a linked database; share with your team.',
+      tier: 'Free tier',
+      complexity: 'No-code',
+    },
+    {
+      name: 'n8n',
+      slug: 'n8n',
+      description: 'Scrape, query, and aggregate from multiple sources with full scripting support.',
+      tier: 'Open source',
+      complexity: 'Low-code',
+    },
+  ],
+};
+
+// ============================================================
 // NO quips (selected once per calculation)
 // ============================================================
 const NO_QUIPS = [
@@ -129,7 +274,31 @@ function buildBusinessCasePlainText(result, taskDescription) {
   );
 }
 
-function renderYes(result, taskDescription) {
+function renderToolCard(tool) {
+  return (
+    `<div class="tool-card">` +
+      `<a class="tool-card__name" href="#affiliate-${tool.slug}">${tool.name}</a>` +
+      `<p class="tool-card__description">${tool.description}</p>` +
+      `<div class="tool-card__badges">` +
+        `<span class="tool-card__badge tool-card__badge--tier">${tool.tier}</span>` +
+        `<span class="tool-card__badge">${tool.complexity}</span>` +
+      `</div>` +
+    `</div>`
+  );
+}
+
+function renderTools(category) {
+  const tools = TOOL_DATA[category];
+  const toolsSection = document.getElementById('tools-section');
+  toolsSection.className = 'tools-section';
+  toolsSection.innerHTML =
+    `<h2 class="tools-heading">Where to start</h2>` +
+    `<div class="tools-grid">${tools.map(renderToolCard).join('')}</div>` +
+    `<p class="tools-footnote">* Links may earn a commission.</p>`;
+  toolsSection.removeAttribute('hidden');
+}
+
+function renderYes(result, taskDescription, taskCategory) {
   const { annual_hours, annual_cost, invest_hours, invest_cost, payback_weeks, roi_ratio, three_year_savings } = result;
 
   // Verdict
@@ -166,6 +335,8 @@ function renderYes(result, taskDescription) {
       }, 2000);
     });
   });
+
+  renderTools(taskCategory);
 }
 
 function renderNo(result) {
@@ -187,6 +358,11 @@ function renderNo(result) {
     `ROI: <span class="mono">${formatRoi(roi_ratio)}</span> over 3 years. ` +
     `Threshold is <span class="mono">10x</span>.` +
     `</p>`;
+
+  // Hide tool recommendations
+  const toolsSection = document.getElementById('tools-section');
+  toolsSection.setAttribute('hidden', '');
+  toolsSection.innerHTML = '';
 }
 
 // ============================================================
@@ -286,6 +462,7 @@ function getFormValues() {
     occurrence_unit:      document.getElementById('occurrence_unit').value,
     occurrence_frequency: parseInt(occFreq.value, 10),
     occurrence_period:    document.getElementById('occurrence_period').value,
+    task_category:        document.getElementById('task_category').value,
     task_description:     taskDesc.value.trim(),
     hours_to_automate:    parseFloat(hoursToAuto.value),
     automate_unit:        document.getElementById('automate_unit').value,
@@ -374,7 +551,7 @@ function initForm() {
       return;
     }
 
-    const { task_description, ...calcInputs } = inputs;
+    const { task_description, task_category, ...calcInputs } = inputs;
     const result = calculate(calcInputs);
 
     // Remove old animation class to allow re-trigger
@@ -385,7 +562,7 @@ function initForm() {
     output.style.animation = '';
 
     if (result.verdict === 'YES') {
-      renderYes(result, task_description);
+      renderYes(result, task_description, task_category);
     } else {
       renderNo(result);
     }

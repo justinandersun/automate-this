@@ -68,6 +68,18 @@
 
         <span class="sentence-text">doing</span>
 
+        <label for="task_category" class="visually-hidden">Task category</label>
+        <select id="task_category" name="task_category" class="inline-select inline-select--wide" aria-required="true">
+          <option value="data_entry">Moving or entering data between tools</option>
+          <option value="reporting">Pulling and formatting reports</option>
+          <option value="notifications">Sending routine updates or alerts</option>
+          <option value="file_ops">Organizing, converting, or renaming files</option>
+          <option value="scheduling">Scheduling, booking, or calendar coordination</option>
+          <option value="research">Gathering or aggregating information</option>
+        </select>
+
+        <span class="sentence-text">— specifically,</span>
+
         <label for="task_description" class="visually-hidden">Task description</label>
         <input
           type="text"
@@ -128,6 +140,7 @@
     <div id="output" class="output" aria-live="polite" hidden>
       <div id="verdict" class="verdict"></div>
       <div id="result-content" class="result-content"></div>
+      <div id="tools-section" hidden></div>
     </div>
   </main>
 
