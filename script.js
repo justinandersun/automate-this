@@ -5,23 +5,35 @@
 // ============================================================
 
 function normalizeOccurrenceToMinutes(value, unit) {
+  if (unit === 'seconds') return value / 60;
   if (unit === 'minutes') return value;
   if (unit === 'hours')   return value * 60;
+  if (unit === 'days')    return value * 8 * 60;
+  if (unit === 'weeks')   return value * 40 * 60;
+  if (unit === 'months')  return value * 160 * 60;
+  if (unit === 'years')   return value * 2080 * 60;
   throw new Error('Unknown occurrence unit: ' + unit);
 }
 
 function normalizeFrequencyToPerYear(freq, period) {
-  if (period === 'day')   return freq * 260;
-  if (period === 'week')  return freq * 52;
-  if (period === 'month') return freq * 12;
-  if (period === 'year')  return freq * 1;
+  if (period === 'seconds') return freq * 260 * 8 * 3600;
+  if (period === 'minutes') return freq * 260 * 8 * 60;
+  if (period === 'hours')   return freq * 260 * 8;
+  if (period === 'days')    return freq * 260;
+  if (period === 'weeks')   return freq * 52;
+  if (period === 'months')  return freq * 12;
+  if (period === 'years')   return freq * 1;
   throw new Error('Unknown occurrence period: ' + period);
 }
 
 function normalizeAutomationToHours(value, unit) {
+  if (unit === 'seconds') return value / 3600;
   if (unit === 'minutes') return value / 60;
   if (unit === 'hours')   return value;
   if (unit === 'days')    return value * 8;
+  if (unit === 'weeks')   return value * 40;
+  if (unit === 'months')  return value * 160;
+  if (unit === 'years')   return value * 2080;
   throw new Error('Unknown automate unit: ' + unit);
 }
 
@@ -323,7 +335,10 @@ function renderYes(result, taskDescription, taskCategory) {
   const resultEl = document.getElementById('result-content');
   resultEl.innerHTML =
     `<div class="business-case">${htmlText}</div>` +
-    `<button type="button" class="copy-btn" id="copy-btn">Copy business case</button>`;
+    `<div class="action-btns">` +
+      `<button type="button" class="copy-btn" id="copy-btn">Copy business case</button>` +
+      `<button type="button" class="share-btn" id="share-btn">Share</button>` +
+    `</div>`;
 
   document.getElementById('copy-btn').addEventListener('click', function () {
     navigator.clipboard.writeText(plainText).then(() => {
@@ -332,6 +347,17 @@ function renderYes(result, taskDescription, taskCategory) {
       setTimeout(() => {
         this.textContent = 'Copy business case';
         this.classList.remove('copied');
+      }, 2000);
+    });
+  });
+
+  document.getElementById('share-btn').addEventListener('click', function () {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      this.textContent = 'Link copied!';
+      this.classList.add('shared');
+      setTimeout(() => {
+        this.textContent = 'Share';
+        this.classList.remove('shared');
       }, 2000);
     });
   });
@@ -351,13 +377,27 @@ function renderNo(result) {
 
   const resultEl = document.getElementById('result-content');
   resultEl.innerHTML =
-    `<p class="no-quip">"${quip}"</p>` +
+    `<p class="no-quip">${quip}</p>` +
     `<p class="no-stats">` +
     `Your time cost: <span class="mono">${formatCurrency(annual_cost)}/year</span>. ` +
     `Automation cost: <span class="mono">${formatCurrency(invest_cost)}</span>. ` +
     `ROI: <span class="mono">${formatRoi(roi_ratio)}</span> over 3 years. ` +
     `Threshold is <span class="mono">10x</span>.` +
-    `</p>`;
+    `</p>` +
+    `<div class="action-btns">` +
+      `<button type="button" class="share-btn" id="share-btn">Share</button>` +
+    `</div>`;
+
+  document.getElementById('share-btn').addEventListener('click', function () {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      this.textContent = 'Link copied!';
+      this.classList.add('shared');
+      setTimeout(() => {
+        this.textContent = 'Share';
+        this.classList.remove('shared');
+      }, 2000);
+    });
+  });
 
   // Hide tool recommendations
   const toolsSection = document.getElementById('tools-section');
@@ -554,6 +594,9 @@ function initForm() {
     const { task_description, task_category, ...calcInputs } = inputs;
     const result = calculate(calcInputs);
 
+    // Write all inputs to the URL so it's shareable
+    updateURL(inputs);
+
     // Remove old animation class to allow re-trigger
     output.removeAttribute('hidden');
     output.style.animation = 'none';
@@ -576,8 +619,135 @@ function initForm() {
 // Init
 // ============================================================
 
+// ============================================================
+// Auto-resize inline inputs and selects to fit their content
+// ============================================================
+
+function initAutoResize() {
+  // Hidden ruler span — matches the sentence font so measurements are accurate
+  const ruler = document.createElement('span');
+  ruler.setAttribute('aria-hidden', 'true');
+  ruler.style.cssText = [
+    'position:absolute',
+    'top:-9999px',
+    'left:-9999px',
+    'visibility:hidden',
+    'white-space:pre',
+    'font-family:Fraunces,Georgia,serif',
+    'font-size:1.75rem',   /* matches .sentence font-size */
+    'font-weight:600',     /* matches input/select font-weight */
+  ].join(';');
+  document.body.appendChild(ruler);
+
+  function measure(text) {
+    ruler.textContent = text;
+    return ruler.offsetWidth;
+  }
+
+  function resizeInput(input) {
+    const text = input.value || input.placeholder || '';
+    const minW = parseFloat(getComputedStyle(input).minWidth) || 0;
+    input.style.width = Math.max(measure(text) + 20, minW) + 'px';
+  }
+
+  function resizeSelect(select) {
+    const opt = select.options[select.selectedIndex];
+    const text = opt ? opt.text : '';
+    const minW = parseFloat(getComputedStyle(select).minWidth) || 0;
+    const maxW = parseFloat(select.dataset.maxw) || Infinity;
+    select.style.width = Math.min(Math.max(measure(text) + 44, minW), maxW) + 'px';
+  }
+
+  // Wire up listeners once
+  document.querySelectorAll('.inline-input').forEach(function (input) {
+    input.addEventListener('input', function () { resizeInput(input); });
+    // After blur, salary value may have gained commas — resize to match
+    input.addEventListener('blur', function () { setTimeout(function () { resizeInput(input); }, 0); });
+  });
+  document.querySelectorAll('.inline-select').forEach(function (select) {
+    select.addEventListener('change', function () { resizeSelect(select); });
+  });
+
+  // Size everything now, then again once fonts are confirmed loaded
+  function resizeAll() {
+    document.querySelectorAll('.inline-input').forEach(resizeInput);
+    document.querySelectorAll('.inline-select').forEach(resizeSelect);
+  }
+  resizeAll();
+  document.fonts.ready.then(resizeAll);
+}
+
+// ============================================================
+// Init
+// ============================================================
+
+// ============================================================
+// URL params — write on calculate, read on load
+// ============================================================
+
+function updateURL(inputs) {
+  const p = new URLSearchParams({
+    hpo: inputs.hours_per_occurrence,
+    ou:  inputs.occurrence_unit,
+    of:  inputs.occurrence_frequency,
+    op:  inputs.occurrence_period,
+    tc:  inputs.task_category,
+    td:  inputs.task_description,
+    hta: inputs.hours_to_automate,
+    au:  inputs.automate_unit,
+    sal: inputs.annual_salary,
+  });
+  history.replaceState(null, '', '?' + p.toString());
+}
+
+function loadFromURL() {
+  const params = new URLSearchParams(location.search);
+  const map = [
+    ['hpo', 'hours_per_occurrence'],
+    ['ou',  'occurrence_unit'],
+    ['of',  'occurrence_frequency'],
+    ['op',  'occurrence_period'],
+    ['tc',  'task_category'],
+    ['td',  'task_description'],
+    ['hta', 'hours_to_automate'],
+    ['au',  'automate_unit'],
+    ['sal', 'annual_salary'],
+  ];
+  let filled = 0;
+  map.forEach(function ([key, id]) {
+    const val = params.get(key);
+    if (val !== null) {
+      const el = document.getElementById(id);
+      if (el) { el.value = val; filled++; }
+    }
+  });
+  // Format salary display if it was loaded
+  if (params.get('sal')) {
+    const salEl = document.getElementById('annual_salary');
+    const num = parseFloat(salEl.value);
+    if (!isNaN(num) && num > 0) {
+      salEl.value = Math.round(num).toLocaleString('en-US');
+    }
+  }
+  return filled === map.length;
+}
+
+// ============================================================
+// Init
+// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
   initSalaryFormatting();
   initBlurValidation();
   initForm();
+
+  const hasURLParams = loadFromURL();
+  initAutoResize();
+
+  // Auto-calculate if all params were present in the URL
+  if (hasURLParams) {
+    requestAnimationFrame(function () {
+      document.getElementById('calc-form').dispatchEvent(new Event('submit'));
+    });
+  }
 });
