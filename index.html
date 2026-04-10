@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automate This? — Should you automate that task?</title>
+  <meta name="description" content="Find out in 10 seconds whether automating a repetitive task is worth your time. Free, instant, no login.">
+  <meta property="og:title" content="Automate This?">
+  <meta property="og:description" content="10-second ROI calculator for automation decisions.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Lora&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Automate This?</h1>
+      <p class="tagline">Find out in 10 seconds whether it's worth it.</p>
+    </header>
+
+    <form id="calc-form" novalidate>
+      <div class="sentence" aria-label="Task description form">
+        <span class="sentence-text">I spend</span>
+
+        <label for="hours_per_occurrence" class="visually-hidden">Time per occurrence</label>
+        <input
+          type="number"
+          id="hours_per_occurrence"
+          name="hours_per_occurrence"
+          class="inline-input inline-input--short"
+          min="0.1"
+          step="0.1"
+          placeholder="2"
+          aria-required="true"
+          autocomplete="off"
+        >
+
+        <label for="occurrence_unit" class="visually-hidden">Unit of time per occurrence</label>
+        <select id="occurrence_unit" name="occurrence_unit" class="inline-select" aria-required="true">
+          <option value="hours">hours</option>
+          <option value="minutes">minutes</option>
+        </select>
+
+        <span class="sentence-text">every</span>
+
+        <label for="occurrence_frequency" class="visually-hidden">How many times per period</label>
+        <input
+          type="number"
+          id="occurrence_frequency"
+          name="occurrence_frequency"
+          class="inline-input inline-input--short"
+          min="1"
+          step="1"
+          placeholder="3"
+          aria-required="true"
+          autocomplete="off"
+        >
+
+        <label for="occurrence_period" class="visually-hidden">Period (day, week, month, year)</label>
+        <select id="occurrence_period" name="occurrence_period" class="inline-select" aria-required="true">
+          <option value="week">week</option>
+          <option value="day">day</option>
+          <option value="month">month</option>
+          <option value="year">year</option>
+        </select>
+
+        <span class="sentence-text">doing</span>
+
+        <label for="task_description" class="visually-hidden">Task description</label>
+        <input
+          type="text"
+          id="task_description"
+          name="task_description"
+          class="inline-input inline-input--long"
+          maxlength="100"
+          placeholder="writing status reports"
+          aria-required="true"
+          autocomplete="off"
+        >
+
+        <span class="sentence-text sentence-text--block">It would take me</span>
+
+        <label for="hours_to_automate" class="visually-hidden">Time to automate</label>
+        <input
+          type="number"
+          id="hours_to_automate"
+          name="hours_to_automate"
+          class="inline-input inline-input--short"
+          min="0.1"
+          step="0.1"
+          placeholder="8"
+          aria-required="true"
+          autocomplete="off"
+        >
+
+        <label for="automate_unit" class="visually-hidden">Unit for automation time</label>
+        <select id="automate_unit" name="automate_unit" class="inline-select" aria-required="true">
+          <option value="hours">hours</option>
+          <option value="minutes">minutes</option>
+          <option value="days">days</option>
+        </select>
+
+        <span class="sentence-text">to automate, and I make roughly</span>
+
+        <span class="salary-wrapper">
+          <span class="salary-symbol">$</span><label for="annual_salary" class="visually-hidden">Annual salary</label><input
+            type="text"
+            id="annual_salary"
+            name="annual_salary"
+            class="inline-input inline-input--medium"
+            placeholder="100,000"
+            aria-required="true"
+            inputmode="numeric"
+            autocomplete="off"
+          >
+        </span>
+
+        <span class="sentence-text">per year.</span>
+      </div>
+
+      <div id="form-error" class="form-error" role="alert" aria-live="assertive"></div>
+
+      <button type="submit" id="calculate-btn" class="calculate-btn">Calculate</button>
+    </form>
+
+    <div id="output" class="output" aria-live="polite" hidden>
+      <div id="verdict" class="verdict"></div>
+      <div id="result-content" class="result-content"></div>
+    </div>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

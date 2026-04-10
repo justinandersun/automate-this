@@ -1,0 +1,357 @@
+/* ============================================================
+   Design Tokens
+   ============================================================ */
+:root {
+  --color-bg:           #0D1B2A;
+  --color-text:         #F5ECD7;
+  --color-accent:       #C9A84C;
+  --color-muted:        #7A8FA6;
+  --color-input-bg:     #162235;
+  --color-input-border: #2A3F5A;
+  --color-yes:          #6FCF97;
+  --color-no:           #EB5757;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Lora', Georgia, serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+}
+
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+main {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  color: var(--color-muted);
+  font-size: 1rem;
+}
+
+/* ============================================================
+   Form Sentence
+   ============================================================ */
+.sentence {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 2rem;
+}
+
+.sentence-text {
+  white-space: nowrap;
+  color: var(--color-text);
+}
+
+.sentence-text--block {
+  flex-basis: 100%;
+  margin-top: 0.25rem;
+}
+
+/* ============================================================
+   Inline Inputs & Selects
+   ============================================================ */
+.inline-input,
+.inline-select {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-accent);
+  padding: 0.1rem 0.25rem;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.inline-input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+/* Box style on focus */
+.inline-input:focus,
+.inline-select:focus {
+  background: var(--color-input-bg);
+  border: 2px solid var(--color-accent);
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.25);
+}
+
+/* Error state */
+.inline-input.is-invalid,
+.inline-select.is-invalid {
+  border-color: var(--color-no);
+}
+
+.inline-input.is-invalid:focus,
+.inline-select.is-invalid:focus {
+  border-color: var(--color-no);
+  box-shadow: 0 0 0 3px rgba(235, 87, 87, 0.25);
+}
+
+/* Widths */
+.inline-input--short  { width: 5rem; min-width: 4rem; }
+.inline-input--medium { width: 7rem; min-width: 5rem; }
+.inline-input--long   { width: 14rem; min-width: 8rem; }
+
+/* Number inputs: hide spin buttons */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Select: custom chevron */
+.inline-select {
+  padding-right: 1.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23C9A84C'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.3rem center;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Salary wrapper */
+.salary-wrapper {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.1rem;
+}
+
+.salary-symbol {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+/* ============================================================
+   Visually Hidden (for labels)
+   ============================================================ */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   Form Error
+   ============================================================ */
+.form-error {
+  color: var(--color-no);
+  font-size: 0.875rem;
+  min-height: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* ============================================================
+   Calculate Button
+   ============================================================ */
+.calculate-btn {
+  display: block;
+  width: 100%;
+  padding: 0.875rem 2rem;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  margin-top: 0.5rem;
+}
+
+.calculate-btn:hover {
+  opacity: 0.9;
+}
+
+.calculate-btn:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(201, 168, 76, 0.2);
+}
+
+.calculate-btn:active {
+  opacity: 0.8;
+}
+
+@media (min-width: 480px) {
+  .calculate-btn {
+    width: auto;
+    min-width: 180px;
+  }
+}
+
+/* ============================================================
+   Output Section
+   ============================================================ */
+.output {
+  margin-top: 3rem;
+  animation: fadeIn 0.4s ease both;
+}
+
+.output[hidden] {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Verdict line */
+.verdict {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.verdict--yes { color: var(--color-yes); }
+.verdict--no  { color: var(--color-no); }
+
+.verdict-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+/* ============================================================
+   YES Output
+   ============================================================ */
+.business-case {
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-input-border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text);
+  white-space: pre-line;
+}
+
+.business-case .mono {
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+}
+
+.copy-btn {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  background: transparent;
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.copy-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-muted);
+}
+
+.copy-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.copy-btn.copied {
+  color: var(--color-yes);
+  border-color: var(--color-yes);
+}
+
+/* ============================================================
+   NO Output
+   ============================================================ */
+.no-quip {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--color-text);
+  margin-bottom: 1.25rem;
+  font-style: italic;
+}
+
+.no-stats {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.no-stats .mono {
+  color: var(--color-muted);
+}
+
+/* ============================================================
+   Focus styles (global safety net)
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
